@@ -1,0 +1,468 @@
+package TP_2_Semestre;
+
+//Bibliotecas utilizadas
+import java.io.BufferedReader; //Fornece classes para a leitura eficiente de caracteres a partir de fluxos de entrada, como arquivos
+import java.io.FileNotFoundException; //Usada para capturar e tratar erros relaconados a excecoes
+import java.io.FileReader; //Fornece classes para a leitura de caracteres de um arquivo de texto
+import java.io.IOException; //Usada para capturar e tratar erros relacionados a operações de entrada e saida de dados
+
+/***********************************************************************************
+ * TRABALHO PRATICO FINAL * ALUNOS: CHRYSTIAN
+ * HENRIQUE FONSECA DE SOUZA; SAMARA HELLEN FERREIRA CHAVES * TURMA: 3110101 *
+ ***********************************************************************************/
+
+//Classe No
+public class No {
+    // Declarando as variaveis
+    Palavra p;
+    No esq;
+    No dir;
+    int altura;
+
+    // Metodo construtor padrao
+    public No(Palavra p) {
+        this.p = p;
+        this.esq = null;
+        this.dir = null;
+        this.altura = 1;
+    }
+}
+
+//Classe Palavra
+public class Palavra {
+    // Declarando as variaveis
+    String nome;
+    Integer contador;
+
+    // Metodo construtor padrao
+    public Palavra(String nome) {
+        this.nome = nome;
+        this.contador = 1;
+    }
+    //Metodo get
+	public String getPalavra() {
+		return nome;
+	}
+	//Metodo para fornecer uma representacao em string, de um objeto do tipo palavra
+	@Override
+	public String toString () {
+		return nome;
+	}
+}
+
+//Classe Lista Dupla
+public class ListaDupla {
+    // Declarando as variaveis
+    No primeiro;
+    No ultimo;
+
+    // Metodo construtor vazio
+    public ListaDupla() {
+        this.primeiro = null;
+        this.ultimo = null;
+    }
+
+    // Metodos de insercao e remocao na lista
+    // inserir no inicio da lista
+    public void inserirInicio(Palavra palavra) {
+        // Criacao de um novo "no" para insercao da palavra no inicio da lista
+        No tmp = new No(palavra);
+        // Condicao caso a lista esteja vazia
+        if (primeiro == null) {
+        	primeiro = tmp;
+        	ultimo = tmp;
+        } else { // Caso esteja preenchida, faz o devido encadeamento para o tmp virar o primeiro termo
+            tmp.dir = primeiro;
+            primeiro.esq = tmp;
+            primeiro = tmp;
+        }
+    }
+    
+    // Inserir antes de determinado elemento da lista
+    void inserirAntes(No noExistente, Palavra palavra) {
+    	//Criando um novo no que contem a palavra
+        No novoNo = new No(palavra);
+
+        if (noExistente == null) {
+            // Caso o no existente seja nulo, o novo no sera inserido como o primeiro elemento da lista
+            novoNo.dir = primeiro;//Ira colocar o novo no como primeiro da lista
+            if (primeiro != null) {//Se o primeiro for diferente de null
+                primeiro.esq = novoNo;//Ira colocar o no anterior do primeiro da lista como novo no 
+            }
+            primeiro = novoNo;//Atualiza o primeiro da lista como novo no
+            if (ultimo == null) {//se o ultimo for nulo(a lista esta vazia)
+                ultimo = novoNo;//o ultimo sera o novo no
+            }
+        } else {
+            // Caso contrario, insere o novo no antes do no existente
+            novoNo.dir = noExistente;//colocando o apontador a direita para o no ja existente
+            novoNo.esq = noExistente.esq;//atribui o anterior do no existente ao anterior do novo no
+            if (noExistente.esq != null) {//se o anterior do no existente for diferente de nulo
+                noExistente.esq.dir = novoNo;//atualiza o proximo do no anterior para o novo no
+            } else {
+                primeiro = novoNo;//se o no anterior do no existente for nulo, o novo no sera o primeiro da lista
+            }
+            noExistente.esq = novoNo;//Atualiza o no anterior do no existente para o novo no
+        }
+    }
+
+
+    // Inserir no fim da lista
+    public void inserirFim(Palavra palavra) {
+        // Criacao de um novo "no" para insercao da palavra no fim da lista
+        No tmp = new No(palavra);
+        // Condicao caso a lista esteja vazia
+        if (ultimo == null) {
+        	primeiro = tmp;
+        	ultimo = tmp;
+        } else { // Caso esteja preenchida, faz o devido encadeamento para o tmp virar o ultimo termo
+            tmp.esq = ultimo;
+            ultimo.dir = tmp;
+            ultimo = tmp;
+        }
+    }
+
+    // Remover no inicio da lista
+    public void removerInicio() {
+        // Condicao caso a lista esteja vazia
+        if (primeiro == null) {
+            System.out.println("A lista esta vazia. Nao e possivel remover.");
+        } else if (primeiro == ultimo) { // Condicao caso haja apenas um "no" na lista
+        	primeiro = null;
+        	ultimo = null;
+        } else { // Remove o "no" no inicio e atualiza as referencias
+        	primeiro = primeiro.dir;
+        	primeiro.esq = null;
+        }
+    }
+
+    // Remover no fim da lista
+    public void removerFim() {
+        // Condicao caso a lista esteja vazia
+        if (ultimo == null) {
+            System.out.println("A lista esta vazia. Nao e possivel remover.");
+        } else if (primeiro == ultimo) { // Condicao caso haja apenas um "no" na lista
+        	primeiro = null;
+        	ultimo = null;
+        } else { // Remove o "no" no fim e atualiza as referencias
+        	ultimo = ultimo.esq;
+        	ultimo.dir = null;
+        }
+    }
+    
+    //Metodo para mostrar a lista
+    public void mostrarLista() {
+    	System.out.println("Lista Dupla: ");
+    	System.out.println("");//Espaco
+        No atual = primeiro;//Iniciando do primeiro
+        while (atual != null) {//Enquanto o atual nao for nulo
+            System.out.println(atual.p + ": " + atual.p.contador + " Vezes");//Ira mostrar a lista
+            atual = atual.dir;//E atualizar a posicao para mostrar o proximo
+        }
+        System.out.println(""); //Espaco
+    }
+}
+
+
+//Classe Arvore AVL
+public class ArvoreAVL {
+	//Declaracao de variavel raiz
+	No Raiz;
+
+	//Metodo construtor vazio
+	public ArvoreAVL() {
+		Raiz = null;
+	}
+	
+	// Metodos de Rotacao da Arvore AVL:
+	
+	/*Como eh calculado o fator de balanceamento?
+Funcao "Math.max()": retorna o maior valor entre dois ou mais valores fornecidos como argumentos, no caso do nosso codigo:
+altura sub arvore a esquerda - altura sub arvore a direita
+	 *******************************************************************
+Fator do no = 2
+Se o fator do filho a direita for 1 ou 0: rotacao simples a esquerda
+Se o fator do filho a direita for -1: rotacao dupla direita esquerda
+	 ********************************************************************
+Fator do no = -2
+Se o fator do filho a direita for -1 ou 0: rotacao simples a direita
+Se o fator do filho a direita for 1: rotacao dupla esquerda direita*/
+	
+	// Metodo para obter a altura de um "no"
+	int altura(No n) {
+		if (n == null) {
+			return -1;
+		}
+		return n.altura;
+	}
+	//Rotacao simples para a esquerda
+    No RotSimpEsq(No a) {
+    	//Realiza a rotacao
+        No b = a.dir;
+        a.dir = b.esq;
+        b.esq = a;
+        //Apos a rotacao, atualiza as novas "alturas", para manter a propriedade de balanceamento
+        a.altura = Math.max(altura(a.esq), altura(a.dir)) + 1;
+        b.altura = Math.max(altura(b.dir), a.altura) + 1;
+        return b;
+    }
+    //Rotacao simples para a direita
+    No RotSimpDir(No a) {
+        No b = a.esq;
+        a.esq = b.dir;
+        b.dir = a;
+        a.altura = Math.max(altura(a.esq), altura(a.dir)) + 1;
+        b.altura = Math.max(altura(b.esq), a.altura) + 1;
+        return b;
+    }
+    //Rotacao dupla esquerda-direita
+    No RotDupEsqDir(No a) {
+        a.esq = RotSimpEsq(a.esq);
+        return RotSimpDir(a);
+    }
+    //Rotacao dupla direta-esquerda
+    No RotDupDirEsq(No a) {
+        a.dir = RotSimpDir(a.dir);
+        return RotSimpEsq(a);
+    }
+		
+	//Metodo Inserir, com balanceamento por rotacao
+	void Inserir (Palavra x)throws Exception{
+		Raiz = Inserir(x, Raiz);
+	}
+	No Inserir(Palavra x, No i) throws Exception {
+        if (i == null) {//Se o no for nulo, ira criar um novo i com a palavra x
+            i = new No(x);
+        } 
+        //Se nao for nulo, ira entrar na condicao seguinte:
+        else if (x.getPalavra().compareTo(i.p.getPalavra()) < 0) {//Se x for menor de forma lexicografica a palavra no no atual
+            i.esq = Inserir(x, i.esq);//ira inserir na sub arvore a esquerda e verifica o balanceamento
+            if (altura(i.esq) - altura(i.dir) == 2) {//Caso esteja desbalanceado ira calcular o fator de balanceamento
+                if (x.getPalavra().compareTo(i.esq.p.getPalavra()) < 0) {
+                    i = RotSimpDir(i);//realiza uma rotacao simples a direita
+                } 
+                else {
+                    i = RotDupEsqDir(i);//Realiza uma rotacao dupla esquerda direita
+                }
+            }
+        } 
+        else if (x.getPalavra().compareTo(i.p.getPalavra()) > 0) {//Se x for maior de forma lexicografica a palavra no no atual
+            i.dir = Inserir(x, i.dir);//ira inserir na sub arvore a direita
+            if (altura(i.dir) - altura(i.esq) == 2) {//Caso esteja desbalanceado ira calcular o fator de balanceamento
+                if (x.getPalavra().compareTo(i.dir.p.getPalavra()) > 0) {
+                    i = RotSimpEsq(i);//realiza uma rotacao simples a esquerda
+                } 
+                else {
+                    i = RotDupDirEsq(i);//realiza uma rotacao dupla direita esquerda
+                }
+            }
+        } 
+        else { // Caso a palavra ja esteja na arvore, incrementa o contador
+        	if(Verificar(x.getPalavra()) == true)
+           i.p.contador++;
+        }
+        //Atualizando a altura do no
+        i.altura = Math.max(altura(i.esq), altura(i.dir)) + 1;
+        return i;
+    }
+	
+	// Metodo para verificar se uma palavra ja esta inserida na arvore AVL
+	boolean Verificar(String palavra) {
+	    return Verificar(palavra, Raiz);
+	}
+	boolean Verificar(String palavra, No i) {
+	    if (i == null) {
+	        return false;
+	    }
+	    int comparacao = palavra.compareTo(i.p.getPalavra());
+	    /*
+	     * Interpretacao da comparacao: 
+	    Se comparacao for igual a 0, significa que as duas palavras sao iguais;
+	    Se comparacao for menor que 0, significa que a palavra atual (palavra) eh lexicograficamente anterior ÃƒÂ  palavra do "no" (i.p.getPalavra;
+	    Se comparacao for maior que 0, significa que a palavra atual (palavra) eh lexicograficamente posterior ÃƒÂ  palavra do "no" (i.p.getPalavra
+	    */
+	    
+	    //Implementacao das acoes de acordo com o resultado da comparacao
+	    if (comparacao == 0) {
+	    // A palavra foi encontrada na sub-arvore analisada
+	        return true;
+	    } 
+	    else if (comparacao < 0) {
+	        // Verificar se a palavra estah na sub-arvore da esquerda
+	        return Verificar(palavra, i.esq);
+	    } 
+	    else {
+	        // Verifica de a palavra estah na sub-arvore da direita
+	        return Verificar(palavra, i.dir);
+	    }
+	}
+	
+	//Metodo Caminhar Central
+	void Caminhar_Central(No i) {
+		if (i != null) {
+			Caminhar_Central(i.esq);
+			System.out.println(i.p + ": " + i.p.contador + " " );
+			Caminhar_Central(i.dir);
+		}
+	}
+	
+	//Metodo Remover, com balanceamento por rotacao
+	void Remover (Palavra x) throws Exception{
+		Raiz = Remover(x, Raiz);
+	}
+	No Remover(Palavra x, No i) throws Exception {
+        if (i == null) {//Se a arvore estiver vazia, ira dar erro
+            throw new Exception("ERRO!");
+        } 
+        //Caso nao seja vazio, ira comparar 
+        else if (x.getPalavra().compareTo(i.p.getPalavra()) < 0) {//Se x for menor de forma lexicografica a palavra no no atual
+            i.esq = Remover(x, i.esq);//Remove o no na sub arvore a esquerda
+            if (altura(i.dir) - altura(i.esq) == 2) {//Caso esteja desbalanceado ira calcular o fator de balanceamento
+                if (altura(i.dir.esq) > altura(i.dir.dir)) {
+                    i = RotDupDirEsq(i);//Realiza uma rotacao dupla direita esquerda
+                } 
+                else {
+                    i = RotSimpEsq(i);//Realiza uma rotacao simples pra esquerda
+                }
+            }
+        } 
+        else if (x.getPalavra().compareTo(i.p.getPalavra()) > 0) {//Se x for maior de forma lexicografica a palavra no no atual
+            i.dir = Remover(x, i.dir);//Remove o no na sub arvore a direita
+            if (altura(i.esq) - altura(i.dir) == 2) {//Caso esteja desbalanceado ira calcular o fator de balanceamento
+                if (altura(i.esq.dir) > altura(i.esq.esq)) {
+                    i = RotDupEsqDir(i);//Realiza uma rotacao dupla esquerda direita
+                } 
+                else {
+                    i = RotSimpDir(i);//Realiza uma rotacao simples a direita
+                }
+            }
+        } 
+        //Se o no x for encontrado
+        else if (i.dir == null) {
+            i = i.esq;//Ira remover o no atual se ele nao tiver filhos a direita
+        } 
+        else if (i.esq == null) {
+            i = i.dir;//Ira remover o no atual se ele nao tiver filhos a esquerda
+        } 
+        else {
+        	//Substitui a palavra no no atual pela maior palavra da sub arvore a esquerda
+            i.esq = MaiorEsq(i, i.esq);
+            if (altura(i.dir) - altura(i.esq) == 2) {
+                if (altura(i.dir.esq) > altura(i.dir.dir)) {
+                    i = RotDupDirEsq(i);//Realiza uma rotacao dupla direita esquerda
+                } 
+                else {
+                    i = RotSimpEsq(i);//Realiza uma rotacao simples a esquerda
+                }
+            }
+        }
+        //Atualiza a altura do no
+        if (i != null) {
+            i.altura = Math.max(altura(i.esq), altura(i.dir)) + 1;
+        }
+        return i;
+	}
+	
+	// Metodo para encontrar o maior elemento na subárvore esquerda de um "no", para reorganizar a estrutura da arvore, de forma a manter a propriedade de busca
+	No MaiorEsq(No i, No j) {
+		//Caso nao haja mais filhos na direita
+		if (j.dir == null) { 
+			i.p = j.p; j = j.esq;
+		} 
+		//Caso haja mais filhos na direita, verifica novamente qual eh o maior
+		else { 
+			j.dir = MaiorEsq(i, j.dir);
+		} 
+		return j;
+	}
+	
+	//Metodo para adicionar as palavras da Arvore AVL na lista dupla
+	void AddLista(ListaDupla lista) {
+	    AddLista(Raiz, lista);
+	}
+	void AddLista(No no, ListaDupla lista) {
+	    if (no != null) {
+	        AddLista(no.dir, lista); // Percorre o "no" da direita primeiro
+
+	        // Encontra a posicao correta para inserir a palavra na lista ordenada
+	        No atualOrdenado = lista.primeiro;
+	        while (atualOrdenado != null && atualOrdenado.p.contador >= no.p.contador) {
+	            atualOrdenado = atualOrdenado.dir;
+	        }
+	        // Insere a palavra na posicao correta da lista ordenada
+	        if (atualOrdenado == null) {
+	            lista.inserirFim(no.p); // Insere no fim se a lista estiver vazia ou se o contador for menor que todos os elementos
+	        } else {
+	            lista.inserirAntes(atualOrdenado, no.p); // Insere antes do "no" encontrado
+	        }
+	        AddLista(no.esq, lista); // Percorre o nÃ³ da esquerda em seguida
+	    }
+	}
+
+	//Metodo Imprimir
+	void Imprimir () {
+		System.out.println("Arvore AVL: ");
+		System.out.println(""); //Espaco
+		Caminhar_Central(Raiz);
+		System.out.println(""); //Espaco
+		System.out.println(""); //Espaco
+	}
+}
+
+//Classe Principal
+public class ClassePrincipal {
+    public static void main(String[] args) throws Exception {
+        // Fazendo com que o programa abra e leia um arquivo txt
+
+        // Declaracao de variaveis
+        ArvoreAVL A1 = new ArvoreAVL();
+        String CaminhoArquivo = "D:\\LabAEDII\\src\\TP_2_Semestre\\ArquivoTP";
+        BufferedReader Leitor = null;
+        
+      //Bloco usado para definir um conjunto de instrucoes onde podem ocorrer excecoes, combinado com metodos "catch" e "finally", para tratar as exececoes encontradas
+        try { 
+            // Leitura do arquivo
+            Leitor = new BufferedReader(new FileReader(CaminhoArquivo));
+            String linha;
+            while ((linha = Leitor.readLine()) != null) { // Condicao para que o programa leia todo o arquivo txt
+                linha = linha.replaceAll("[^a-zA-Z0-9\\sÀ-ú]", ""); // Despreza os sinais de pontuacao, mas nao a acentuacao
+                linha = linha.toLowerCase(); // Converte as letras maiusculas em minusculas
+                //Condicao para inserir as palavras a cada espaco
+                String[] PalavrasSeparadas = linha.split(" "); // Divide a linha em palavras com base no espaço
+                //Percorre cada elemento do array PalavrasSeparadas e processa cada palavra individualmente, atraves da leitura dos espacos, atribuindo cada palavra ah string palavra
+                for (String palavra : PalavrasSeparadas) { //loop for-each
+                	palavra.replace(" ", ""); //Despreza os espacos, antes da insercao na arvore AVL
+                	Palavra P = new Palavra(palavra); //Armazena a palavra lida na classe Palavra, para posterior uso na arvore AVL
+                    A1.Inserir(P); // Insere as palavras na arvore
+                }
+            }
+            A1.Imprimir(); // Mostra a arvore
+            
+            // Insere todas as palavras da arvore na lista dupla, na ordem das que mais aparecem para as que menos aparecem
+            // Criando uma lista dupla vazia
+            ListaDupla lista = new ListaDupla();
+
+            // Adiciona as palavras da arvore na lista dupla
+            A1.AddLista(lista);
+
+            // Mostra a lista dupla
+            lista.mostrarLista();
+            
+        } catch (FileNotFoundException e) { // Tratamento para a excecao caso o arquivo nao seja encontrado no sistema
+            e.printStackTrace(); // Metodo usado para depurar e rastrear o fluxo de execucao do programa quando uma excecao eh lancada
+        } catch (IOException e) { // Tratamento para a exececao caso haja algum erro durante a leitura ou gravacao de dados de entrada ou saida
+            e.printStackTrace();
+            
+        //Fechando o Arquivo    
+        } finally { // Bloco que sera executado independe de ser encontrada alguma excecao
+            if (Leitor != null) {
+                try {
+                    Leitor.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
+
